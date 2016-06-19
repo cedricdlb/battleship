@@ -15,3 +15,11 @@
 
 # Ignore Byebug command history file.
 .byebug_history
+
+# Vim stuff
+*~
+*.sw[a-z]
+
+# # Mac-specific
+.DS_Store
+
