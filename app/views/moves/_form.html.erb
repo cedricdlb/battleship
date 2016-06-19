@@ -1,0 +1,57 @@
+<%= form_for(move) do |f| %>
+  <% if move.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(move.errors.count, "error") %> prohibited this move from being saved:</h2>
+
+      <ul>
+      <% move.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :game_id %>
+    <%= f.number_field :game_id %>
+  </div>
+
+  <div class="field">
+    <%= f.label :player_id %>
+    <%= f.number_field :player_id %>
+  </div>
+
+  <div class="field">
+    <%= f.label :turn_number %>
+    <%= f.number_field :turn_number %>
+  </div>
+
+  <div class="field">
+    <%= f.label :attack_coords %>
+    <%= f.text_area :attack_coords %>
+  </div>
+
+  <div class="field">
+    <%= f.label :hit %>
+    <%= f.check_box :hit %>
+  </div>
+
+  <div class="field">
+    <%= f.label :ship_part_hit %>
+    <%= f.text_field :ship_part_hit %>
+  </div>
+
+  <div class="field">
+    <%= f.label :ship_sunk %>
+    <%= f.text_field :ship_sunk %>
+  </div>
+
+  <div class="field">
+    <%= f.label :fleet_sunk %>
+    <%= f.check_box :fleet_sunk %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

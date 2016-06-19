@@ -1,0 +1,21 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  game_id: 1
+  player_id: 1
+  turn_number: 1
+  attack_coords: MyText
+  hit: false
+  ship_part_hit: MyString
+  ship_sunk: MyString
+  fleet_sunk: false
+
+two:
+  game_id: 1
+  player_id: 1
+  turn_number: 1
+  attack_coords: MyText
+  hit: false
+  ship_part_hit: MyString
+  ship_sunk: MyString
+  fleet_sunk: false

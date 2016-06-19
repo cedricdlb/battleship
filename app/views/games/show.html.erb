@@ -1,0 +1,39 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Title:</strong>
+  <%= @game.title %>
+</p>
+
+<p>
+  <strong>Player 1:</strong>
+  <%= @game.player_1_id %>
+</p>
+
+<p>
+  <strong>Player 2:</strong>
+  <%= @game.player_2_id %>
+</p>
+
+<p>
+  <strong>Player 1 fleet status:</strong>
+  <%= @game.player_1_fleet_status %>
+</p>
+
+<p>
+  <strong>Player 2 fleet status:</strong>
+  <%= @game.player_2_fleet_status %>
+</p>
+
+<p>
+  <strong>Player 1 fleet coords:</strong>
+  <%= @game.player_1_fleet_coords %>
+</p>
+
+<p>
+  <strong>Player 2 fleet coords:</strong>
+  <%= @game.player_2_fleet_coords %>
+</p>
+
+<%= link_to 'Edit', edit_game_path(@game) %> |
+<%= link_to 'Back', games_path %>

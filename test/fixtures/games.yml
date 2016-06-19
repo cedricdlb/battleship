@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  player_1_id: 
+  player_2_id: 
+  player_1_fleet_status: 
+  player_2_fleet_status: 
+  player_1_fleet_coords: MyText
+  player_2_fleet_coords: MyText
+
+two:
+  title: MyString
+  player_1_id: 
+  player_2_id: 
+  player_1_fleet_status: 
+  player_2_fleet_status: 
+  player_1_fleet_coords: MyText
+  player_2_fleet_coords: MyText

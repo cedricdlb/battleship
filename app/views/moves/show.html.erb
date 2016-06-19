@@ -1,0 +1,44 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Game:</strong>
+  <%= @move.game_id %>
+</p>
+
+<p>
+  <strong>Player:</strong>
+  <%= @move.player_id %>
+</p>
+
+<p>
+  <strong>Turn number:</strong>
+  <%= @move.turn_number %>
+</p>
+
+<p>
+  <strong>Attack coords:</strong>
+  <%= @move.attack_coords %>
+</p>
+
+<p>
+  <strong>Hit:</strong>
+  <%= @move.hit %>
+</p>
+
+<p>
+  <strong>Ship part hit:</strong>
+  <%= @move.ship_part_hit %>
+</p>
+
+<p>
+  <strong>Ship sunk:</strong>
+  <%= @move.ship_sunk %>
+</p>
+
+<p>
+  <strong>Fleet sunk:</strong>
+  <%= @move.fleet_sunk %>
+</p>
+
+<%= link_to 'Edit', edit_move_path(@move) %> |
+<%= link_to 'Back', moves_path %>
