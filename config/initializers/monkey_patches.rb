@@ -1,0 +1,1 @@
+require 'rails_extensions/caching_key_generator/generate_key'

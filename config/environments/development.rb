@@ -48,4 +48,9 @@ Rails.application.configure do
   # Use an evented file watcher to asynchronously detect changes in source code,
   # routes, locales, etc. This feature depends on the listen gem.
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
+
+  # Provide a 32-bit password salt instead of "encrypted cookie"
+ #config.action_dispatch.encrypted_cookie_salt = "F7yGgRAvn83J8O8dcnrtj+B6OOr5tKbxV+YmexmunXk="
+ #config.action_dispatch.encrypted_cookie_salt = "\xFFE\xDF\x91\x94\x18\x01\r\x8B\xC2\xE2B3`S2\xA8N\xBC\xE68Q&\xB7`/\xC1rXv\xEFC"
+  config.action_dispatch.encrypted_cookie_salt = "pRaj41IblAGnz070x8vfIX1pmqHp7PaZ8kVA9NZJAe3AxThaHrUwuIeXmR5RaQ1F1acPpc7IW-jXqtkztQ2Zng"
 end
