@@ -14,7 +14,7 @@ class GamesController < ApplicationController
 
   # GET /games/new
   def new
-    @game = Game.new
+    @game = Game.new(&:init_game)
   end
 
   # GET /games/1/edit
@@ -26,7 +26,10 @@ class GamesController < ApplicationController
   def create
     @game = Game.new(game_params)
 
-    # Keep channel open to player_1
+    @game.player_1_fleet_coords -= [""] if @game.player_1_fleet_coords
+    @game.player_2_fleet_coords -= [""] if @game.player_2_fleet_coords
+
+    # TODO: Use Action Cable to keep channel open to player_1
 
     respond_to do |format|
       if @game.save
@@ -44,8 +47,8 @@ class GamesController < ApplicationController
   def join
     @game.player_2 = game_params["player_id"] if game_params["player_id"] && !@game.player_2
 
-    # Keep channel open to player_2
-    # Message player_1 that it's their turn to start
+    # TODO: Use Action Cable to Keep channel open to player_2
+    # TODO: Use Action Cable to Message player_1 that it's their turn to start
 
     respond_to do |format|
       if @game.update(game_params)
@@ -90,6 +93,7 @@ class GamesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def game_params
-      params.require(:game).permit(:title, :player_1_id, :player_2_id, :player_1_fleet_status, :player_2_fleet_status, :player_1_fleet_coords, :player_2_fleet_coords)
+      params.require(:game).permit(:title, :player_1_id, :player_2_id, :whose_move, :player_1_fleet_status, :player_2_fleet_status, :player_1_fleet_coords => [], :player_2_fleet_coords => [])
     end
+
 end

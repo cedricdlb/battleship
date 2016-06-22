@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   resources :games do
+    put 'join', on: :member
     resources :moves
   end
   resources :players

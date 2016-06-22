@@ -1,10 +1,12 @@
 class MovesController < ApplicationController
+  before_action :set_game #, only: [:show, :new, :create, :edit, :update, :join, :destroy]
   before_action :set_move, only: [:show, :edit, :update, :destroy]
+ #before_action :set_move, only: [:show,                 :destroy]
 
   # GET /games/:game_id/moves
   # GET /games/:game_id/moves.json
   def index
-    @moves = Move.all
+    @moves = @game.moves.all
   end
 
   # GET /games/:game_id/moves/1
@@ -14,7 +16,9 @@ class MovesController < ApplicationController
 
   # GET /games/:game_id/moves/new
   def new
-    @move = Move.new
+    @move = @game.moves.new
+    @move.turn_number = @game.moves.count
+    @move.player_id = @game.player_id_whose_move_it_is
   end
 
   # GET /games/:game_id/moves/1/edit
@@ -26,13 +30,35 @@ class MovesController < ApplicationController
   def create
     @move = Move.new(move_params)
 
-    respond_to do |format|
-      if @move.save
-        format.html { redirect_to @move, notice: 'Move was successfully created.' }
-        format.json { render :show, status: :created, location: @move }
-      else
-        format.html { render :new }
-        format.json { render json: @move.errors, status: :unprocessable_entity }
+    if @game.players_turn?(@move.player_id)
+
+      defending_player_id = @game.other_player_id(@move.player_id)
+  
+      move_status = @game.record_hit!(@move.attack_coords, defending_player_id)
+      @move.update(move_status)
+  
+      respond_to do |format|
+        if @move.save
+          @game.increment_whose_turn_it_is!
+         #format.html { redirect_to [@game, @move], notice: 'Move was successfully created.' }
+          format.html { redirect_to [@game, @move], notice: @move.message }
+          format.json { render :show, status: :created, location: @move }
+        else
+          format.html { render :new }
+          format.json { render json: @move.errors, status: :unprocessable_entity }
+        end
+      end
+    else
+      Rails.logger.debug "CdLB: moves#create player #{@move.player_id} tried to play, but it's #{@game.player_id_whose_move_it_is}'s turn"
+      flash[:alert] = "Admiral, we can't fire, we're still reloading guns! (Please wait for your turn.)" 
+      @move.errors.messages[:player_id] ||= []
+      @move.errors.details[:player_id]  ||= []
+      @move.errors.messages[:player_id] << "ID (#{@move.player_id}) does not match whose turn it is (#{@game.player_id_whose_move_it_is})"
+      @move.errors.details[:player_id]  << {error: :not_players_turn, value: @move.player_id}
+      respond_to do |format|
+        format.html { render :new, status: :locked, notice: "Admiral, we can't fire, we're still reloading guns! (Please wait for your turn.)" }
+       #format.json { render json: @move.errors, status: :unprocessable_entity }
+        format.json { render json: @move.errors, status: :locked }
       end
     end
   end
@@ -42,7 +68,7 @@ class MovesController < ApplicationController
   def update
     respond_to do |format|
       if @move.update(move_params)
-        format.html { redirect_to @move, notice: 'Move was successfully updated.' }
+        format.html { redirect_to [@game, @move], notice: 'Move was successfully updated.' }
         format.json { render :show, status: :ok, location: @move }
       else
         format.html { render :edit }
@@ -56,15 +82,19 @@ class MovesController < ApplicationController
   def destroy
     @move.destroy
     respond_to do |format|
-      format.html { redirect_to moves_url, notice: 'Move was successfully destroyed.' }
+      format.html { redirect_to game_moves_path(@game), notice: 'Move was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
+    def set_game
+      @game = Game.find(params[:game_id])
+    end
+
     def set_move
-      @move = Move.find(params[:id])
+      @move = @game.moves.find(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
