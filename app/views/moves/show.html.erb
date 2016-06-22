@@ -40,5 +40,6 @@
   <%= @move.fleet_sunk %>
 </p>
 
-<%= link_to 'Edit', edit_move_path(@move) %> |
-<%= link_to 'Back', moves_path %>
+<%#= link_to 'Edit', edit_move_path(@move) %> |
+<%= link_to 'Edit', edit_game_move_path(@game, @move) %> |
+<%= link_to 'Back', game_moves_path(@game) %>

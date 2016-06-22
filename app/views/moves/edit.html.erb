@@ -1,6 +1,6 @@
 <h1>Editing Move</h1>
 
-<%= render 'form', move: @move %>
+<%= render 'form', game: @game, move: @move %>
 
-<%= link_to 'Show', @move %> |
-<%= link_to 'Back', moves_path %>
+<%= link_to 'Show', game_move_path(@game, @move) %> |
+<%= link_to 'Back', game_moves_path(@game) %>

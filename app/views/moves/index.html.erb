@@ -28,9 +28,9 @@
         <td><%= move.ship_part_hit %></td>
         <td><%= move.ship_sunk %></td>
         <td><%= move.fleet_sunk %></td>
-        <td><%= link_to 'Show', move %></td>
-        <td><%= link_to 'Edit', edit_move_path(move) %></td>
-        <td><%= link_to 'Destroy', move, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= link_to 'Show', game_move_path(@game, move) %></td>
+        <td><%= link_to 'Edit', edit_game_move_path(@game, move) %></td>
+        <td><%= link_to 'Destroy', [@game, move], method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
     <% end %>
   </tbody>
@@ -38,4 +38,4 @@
 
 <br>
 
-<%= link_to 'New Move', new_move_path %>
+<%= link_to 'New Move', new_game_move_path(@game) %>

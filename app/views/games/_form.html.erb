@@ -27,6 +27,11 @@
   </div>
 
   <div class="field">
+    <%= f.label :whose_move %>
+    <%= f.text_field :whose_move %>
+  </div>
+
+  <div class="field">
     <%= f.label :player_1_fleet_status %>
     <%= f.text_field :player_1_fleet_status %>
   </div>
@@ -38,12 +43,19 @@
 
   <div class="field">
     <%= f.label :player_1_fleet_coords %>
-    <%= f.text_area :player_1_fleet_coords %>
+    <%#= f.text_area :player_1_fleet_coords %>
+    <%= f.select :player_1_fleet_coords, game.player_1_fleet_coords, {}, multiple: true, size: 15 %>
+    <%#= f.select :player_1_fleet_coords, grouped_options_for_select(game.player_1_fleet_coords, multiple: true), size: 20 %>
+    <%# TODO: I May later represent the list on the form as [["a1"], ["b1", "b2"], ["c1", "c2", "c3"], ...]
+      # where the sub lists represent the five individual ships.  This would simplify inputting coords.
+      # Then the list would be flattened before being saved to the game, and it would be unflattened to redisplay.
+      # Or leave it in the array or arrays form, and flatten it before indexing it for an attack_coord %>
   </div>
 
   <div class="field">
     <%= f.label :player_2_fleet_coords %>
-    <%= f.text_area :player_2_fleet_coords %>
+    <%#= f.text_area :player_2_fleet_coords %>
+    <%= f.select :player_2_fleet_coords, game.player_2_fleet_coords, {}, multiple: true, size: 15 %>
   </div>
 
   <div class="actions">
