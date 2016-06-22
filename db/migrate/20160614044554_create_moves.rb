@@ -4,11 +4,12 @@ class CreateMoves < ActiveRecord::Migration[5.0]
       t.integer :game_id
       t.integer :player_id
       t.integer :turn_number
-      t.text    :attack_coords
-      t.boolean :hit
+      t.string  :attack_coords
       t.string  :ship_part_hit
-      t.string  :ship_sunk
+      t.boolean :hit
+      t.boolean :ship_sunk
       t.boolean :fleet_sunk
+      t.text    :message
     end
   end
 end

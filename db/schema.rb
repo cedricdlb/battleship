@@ -31,11 +31,12 @@ ActiveRecord::Schema.define(version: 20160614044554) do
     t.integer "game_id"
     t.integer "player_id"
     t.integer "turn_number"
-    t.text    "attack_coords"
-    t.boolean "hit"
+    t.string  "attack_coords"
     t.string  "ship_part_hit"
-    t.string  "ship_sunk"
+    t.boolean "hit"
+    t.boolean "ship_sunk"
     t.boolean "fleet_sunk"
+    t.text    "message"
   end
 
   create_table "players", force: :cascade do |t|
