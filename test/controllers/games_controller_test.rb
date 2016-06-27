@@ -2,7 +2,7 @@ require 'test_helper'
 
 class GamesControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @game = games(:one)
+    @game = games(:game_1)
   end
 
   test "should get index" do
@@ -17,7 +17,13 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
 
   test "should create game" do
     assert_difference('Game.count') do
-      post games_url, params: { game: { player_1_fleet_coords: @game.player_1_fleet_coords, player_1_fleet_status: @game.player_1_fleet_status, player_1_id: @game.player_1_id, player_2_fleet_coords: @game.player_2_fleet_coords, player_2_fleet_status: @game.player_2_fleet_status, player_2_id: @game.player_2_id, title: @game.title } }
+      post games_url, params: { game: { player_1_fleet_coords: @game.player_1_fleet_coords,
+                                        player_1_fleet_status: @game.player_1_fleet_status,
+                                        player_1_id: @game.player_1_id,
+                                        player_2_fleet_coords: @game.player_2_fleet_coords,
+                                        player_2_fleet_status: @game.player_2_fleet_status,
+                                        player_2_id: @game.player_2_id,
+                                        title: @game.title + " too"} }
     end
 
     assert_redirected_to game_path(Game.last)

@@ -2,7 +2,7 @@ require 'test_helper'
 
 class PlayersControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @player = players(:one)
+    @player = players(:player_1)
   end
 
   test "should get index" do
@@ -17,7 +17,7 @@ class PlayersControllerTest < ActionDispatch::IntegrationTest
 
   test "should create player" do
     assert_difference('Player.count') do
-      post players_url, params: { player: { name: @player.name } }
+      post players_url, params: { player: { name: @player.name + " the third" } }
     end
 
     assert_redirected_to player_path(Player.last)

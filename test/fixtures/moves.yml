@@ -1,21 +1,24 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  game_id: 1
-  player_id: 1
+move_1:
+  game: game_1
+  player: player_1
   turn_number: 1
-  attack_coords: MyText
-  hit: false
-  ship_part_hit: MyString
-  ship_sunk: MyString
+  attack_coords: "a1"
+  ship_part_hit: "submarine"
+  hit: true
+  ship_sunk: true
   fleet_sunk: false
+  message: "#{player_1.name} targetted: a1 and sunk #{player_2.name}'s submarine!"
 
-two:
-  game_id: 1
-  player_id: 1
-  turn_number: 1
-  attack_coords: MyText
+
+move_2:
+  game: game_1
+  player: player_2
+  turn_number: 2
+  attack_coords: "a2"
   hit: false
-  ship_part_hit: MyString
-  ship_sunk: MyString
+  ship_part_hit: null
+  ship_sunk: false
   fleet_sunk: false
+  message: "#{player_2.name} targetted: a2 and missed."

@@ -1,19 +1,21 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  title: MyString
-  player_1_id: 
-  player_2_id: 
-  player_1_fleet_status: 
-  player_2_fleet_status: 
-  player_1_fleet_coords: MyText
-  player_2_fleet_coords: MyText
+game_1:
+  title: "Game one"
+  player_1: player_1
+  player_2: player_2
+  whose_move: 0
+  player_1_fleet_status: 0b0111_1111_1111_1111
+  player_2_fleet_status: 0b0111_1111_1111_1111
+  player_1_fleet_coords: ["a1",   "b1", "b2",   "c1", "c2", "c3",   "d1", "d2", "d3", "d4",   "e1", "e2", "e3", "e4", "e5" ]
+  player_2_fleet_coords: ["b2",   "b4", "c4",   "d1", "d2", "d3",   "i4", "i5", "i6", "i7",   "e9", "f9", "g9", "h9", "i9" ]
 
-two:
-  title: MyString
-  player_1_id: 
-  player_2_id: 
-  player_1_fleet_status: 
-  player_2_fleet_status: 
-  player_1_fleet_coords: MyText
-  player_2_fleet_coords: MyText
+game_2:
+  title: "Game two"
+  player_1: player_1
+  player_2: player_2
+  whose_move: 0
+  player_1_fleet_status: 0b0111_1111_1111_1111
+  player_2_fleet_status: 0b0111_1111_1111_1111
+  player_1_fleet_coords: ["a1",   "b1", "b2",   "c1", "c2", "c3",   "d1", "d2", "d3", "d4",   "e1", "e2", "e3", "e4", "e5" ]
+  player_2_fleet_coords: ["b2",   "b4", "c4",   "d1", "d2", "d3",   "i4", "i5", "i6", "i7",   "e9", "f9", "g9", "h9", "i9" ]

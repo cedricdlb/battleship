@@ -1,7 +1,7 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  name: MyString
+player_1:
+  name: "Reginald I"
 
-two:
-  name: MyString
+player_2:
+  name: "Henry II"

@@ -60,6 +60,10 @@ class Game < ApplicationRecord
     move_status = {}
     defender_fleet_coords = defending_player_id == player_1_id ?  player_1_fleet_coords  :  player_2_fleet_coords
     defender_fleet_status = defending_player_id == player_1_id ? "player_1_fleet_status" : "player_2_fleet_status"
+    defender = Player.find(defending_player_id).name # this doesn't take advantage of any preloading.
+   #defender = player(defending_player_id).name      # TODO: Define and use this method instead.
+    attacker = other_player(defending_player_id).name
+    move_status[:message]  = "#{attacker} targetted: #{attack_coords} and "  # ...
 
     # ship_part_index will be nil if there is no ship at the specified coordinate
     ship_part_index = defender_fleet_coords.flatten.index(attack_coords)
@@ -77,16 +81,18 @@ class Game < ApplicationRecord
       move_status[:ship_part_hit] = SHIP_NAMES[ship_mask]
      #move_status[:ship_sunk]     = SUNK == defender_fleet_status & ship_mask
      #move_status[:fleet_sunk]    = SUNK == defender_fleet_status
-      move_status[:ship_sunk]     = SUNK == self.send(defender_fleet_status) & ship_mask
-      move_status[:fleet_sunk]    = SUNK == self.send(defender_fleet_status)
+      move_status[:ship_sunk]     = is_ship_sunk?(defender_fleet_status, ship_mask)
+      move_status[:fleet_sunk]    = is_fleet_sunk?(defender_fleet_status)
 
-      attacker = other_player(defending_player_id).name
-      defender = Player.find(defending_player_id).name
       sunk_or_hit = move_status[:ship_sunk] ? "sunk" : "hit"
-      move_status[:message]  = "#{attacker} #{sunk_or_hit} #{defender}'s #{move_status[:ship_part_hit]}!"
-      move_status[:message] += " And destroyed #{defender}'s fleet!" if move_status[:fleet_sunk]
+      move_status[:message]      += "#{sunk_or_hit} #{defender}'s #{move_status[:ship_part_hit]}!"
+      move_status[:message]      += " And destroyed #{defender}'s fleet!" if move_status[:fleet_sunk]
     else
       move_status[:hit]           = false
+      move_status[:ship_part_hit] = nil
+      move_status[:ship_sunk]     = false
+      move_status[:fleet_sunk]    = is_fleet_sunk?(defender_fleet_status)
+      move_status[:message]      += "missed."
     end
     return move_status
   end
@@ -103,6 +109,15 @@ class Game < ApplicationRecord
       self.player_2_fleet_status = fleet_status
     end
   end
+
+  def is_fleet_sunk?(fleet_status)
+    SUNK == fleet_status
+  end
+
+  def is_ship_sunk?(fleet_status, ship_mask)
+    SUNK == fleet_status & ship_mask
+  end
+
 
 # def fleet_status_of_player(player_id)
 #   player_id == player_1_id ? player_1_fleet_status : player_2_fleet_status
