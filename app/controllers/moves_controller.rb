@@ -17,7 +17,7 @@ class MovesController < ApplicationController
   # GET /games/:game_id/moves/new
   def new
     @move = @game.moves.new
-    @move.turn_number = @game.moves.count
+    @move.move_number = @game.move_counter + 1
     @move.player_id = @game.player_id_whose_move_it_is
   end
 
@@ -29,9 +29,10 @@ class MovesController < ApplicationController
   # POST /games/:game_id/moves.json
   def create
     @move = Move.new(move_params)
+    @move.attack_coords.strip!
+    @move.attack_coords.upcase!
 
     if @game.players_turn?(@move.player_id)
-
       defending_player_id = @game.other_player_id(@move.player_id)
   
       move_status = @game.record_hit!(@move.attack_coords, defending_player_id)
@@ -39,8 +40,9 @@ class MovesController < ApplicationController
   
       respond_to do |format|
         if @move.save
-          @game.increment_whose_turn_it_is!
-         #format.html { redirect_to [@game, @move], notice: 'Move was successfully created.' }
+          @game.increment_move_counters!
+# TODO: in Game#record_hit! take out self.save and add in increment_move_counters
+#       and only save game changes if the move was successfully saved.
           format.html { redirect_to [@game, @move], notice: @move.message }
           format.json { render :show, status: :created, location: @move }
         else
@@ -99,6 +101,6 @@ class MovesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def move_params
-      params.require(:move).permit(:game_id, :player_id, :turn_number, :attack_coords, :hit, :ship_part_hit, :ship_sunk, :fleet_sunk)
+      params.require(:move).permit(:game_id, :player_id, :move_number, :attack_coords, :hit, :ship_part_hit, :ship_sunk, :fleet_sunk)
     end
 end

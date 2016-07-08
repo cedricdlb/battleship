@@ -1,24 +1,35 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-move_1:
+move_1_p_1:
   game: game_1
   player: player_1
-  turn_number: 1
-  attack_coords: "a1"
-  ship_part_hit: "submarine"
-  hit: true
-  ship_sunk: true
-  fleet_sunk: false
-  message: "#{player_1.name} targetted: a1 and sunk #{player_2.name}'s submarine!"
+  attack_coords: "B2"
+ #move_number: 1
+ #ship_part_hit: "submarine"
+ #hit: true
+ #ship_sunk: true
+ #fleet_sunk: false
+ #message: "#{player_1.name} targetted: a1 and sunk #{player_2.name}'s submarine!"
 
-
-move_2:
+move_1_p_2:
   game: game_1
   player: player_2
-  turn_number: 2
-  attack_coords: "a2"
-  hit: false
-  ship_part_hit: null
-  ship_sunk: false
-  fleet_sunk: false
-  message: "#{player_2.name} targetted: a2 and missed."
+  attack_coords: "A1"
+ #move_number: 2
+ #hit: false
+ #ship_part_hit: null
+ #ship_sunk: false
+ #fleet_sunk: false
+ #message: "#{player_2.name} targetted: a2 and missed."
+
+move_2_p_1:
+  game: game_1
+  player: player_1
+  attack_coords: "B3"
+ #move_number: 3
+
+move_2_p_2:
+  game: game_1
+  player: player_2
+  attack_coords: "A1"
+ #move_number: 4

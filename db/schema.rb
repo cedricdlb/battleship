@@ -17,30 +17,37 @@ ActiveRecord::Schema.define(version: 20160614044554) do
   enable_extension "plpgsql"
 
   create_table "games", force: :cascade do |t|
-    t.string  "title"
-    t.integer "player_1_id"
-    t.integer "player_2_id"
-    t.integer "whose_move"
-    t.integer "player_1_fleet_status"
-    t.integer "player_2_fleet_status"
-    t.text    "player_1_fleet_coords"
-    t.text    "player_2_fleet_coords"
+    t.string   "title"
+    t.integer  "player_1_id"
+    t.integer  "player_2_id"
+    t.integer  "whose_move"
+    t.integer  "move_counter"
+    t.integer  "player_1_fleet_status"
+    t.integer  "player_2_fleet_status"
+    t.text     "player_1_fleet_coords"
+    t.text     "player_2_fleet_coords"
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
   end
 
   create_table "moves", force: :cascade do |t|
-    t.integer "game_id"
-    t.integer "player_id"
-    t.integer "turn_number"
-    t.string  "attack_coords"
-    t.string  "ship_part_hit"
-    t.boolean "hit"
-    t.boolean "ship_sunk"
-    t.boolean "fleet_sunk"
-    t.text    "message"
+    t.integer  "game_id"
+    t.integer  "player_id"
+    t.integer  "move_number"
+    t.string   "attack_coords"
+    t.string   "ship_part_hit"
+    t.boolean  "hit"
+    t.boolean  "ship_sunk"
+    t.boolean  "fleet_sunk"
+    t.text     "message"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
   end
 
   create_table "players", force: :cascade do |t|
-    t.string "name"
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
 end

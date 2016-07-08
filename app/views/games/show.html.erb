@@ -21,6 +21,11 @@
 </p>
 
 <p>
+  <strong>Move Counter:</strong>
+  <%= @game.move_counter%>
+</p>
+
+<p>
   <strong>Player 1 fleet status:</strong>
   <%= @game.player_1_fleet_status %>
 </p>
@@ -42,3 +47,38 @@
 
 <%= link_to 'Edit', edit_game_path(@game) %> |
 <%= link_to 'Back', games_path %>
+
+<% waiting_for_joiners = [Game::STATE_WAITING_ALL_PLAYERS_TO_JOIN,
+                          Game::STATE_WAITING_PLAYER_1_TO_JOIN,
+                          Game::STATE_WAITING_PLAYER_2_TO_JOIN] %>
+<% if waiting_for_joiners.include?(@game.game_state) %>
+  <h1>Join Game</h1>
+  
+  <%= form_for(@game, url: join_game_url(@game)) do |f| %>
+    <% if @game.errors.any? %>
+      <div id="error_explanation">
+        <h2><%= pluralize(@game.errors.count, "error") %> prohibited this game from being saved:</h2>
+  
+        <ul>
+        <% @game.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+        </ul>
+      </div>
+    <% end %>
+  
+    <div class="field">
+      <%= f.label :player_1_id %>
+      <%= f.text_field :player_1_id %>
+    </div>
+  
+    <div class="field">
+      <%= f.label :player_2_id %>
+      <%= f.text_field :player_2_id %>
+    </div>
+  
+    <div class="actions">
+      <%= f.submit "Join Game" %>
+    </div>
+  <% end %>
+<% end %>

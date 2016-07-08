@@ -12,7 +12,7 @@
 
 <p>
   <strong>Turn number:</strong>
-  <%= @move.turn_number %>
+  <%= @move.move_number %>
 </p>
 
 <p>
@@ -38,6 +38,11 @@
 <p>
   <strong>Fleet sunk:</strong>
   <%= @move.fleet_sunk %>
+</p>
+
+<p>
+  <strong>Message:</strong>
+  <%= @move.message %>
 </p>
 
 <%#= link_to 'Edit', edit_move_path(@move) %> |

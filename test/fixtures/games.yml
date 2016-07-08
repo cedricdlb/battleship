@@ -4,18 +4,31 @@ game_1:
   title: "Game one"
   player_1: player_1
   player_2: player_2
-  whose_move: 0
+  whose_move: Game::PLAYER_1
+  move_counter: 0
   player_1_fleet_status: 0b0111_1111_1111_1111
   player_2_fleet_status: 0b0111_1111_1111_1111
-  player_1_fleet_coords: ["a1",   "b1", "b2",   "c1", "c2", "c3",   "d1", "d2", "d3", "d4",   "e1", "e2", "e3", "e4", "e5" ]
-  player_2_fleet_coords: ["b2",   "b4", "c4",   "d1", "d2", "d3",   "i4", "i5", "i6", "i7",   "e9", "f9", "g9", "h9", "i9" ]
+  player_1_fleet_coords: ["A1",   "B1", "B2",   "C1", "C2", "C3",   "D1", "D2", "D3", "D4",   "E1", "E2", "E3", "E4", "E5" ]
+  player_2_fleet_coords: ["B2",   "B4", "C4",   "D1", "D2", "D3",   "I4", "I5", "I6", "I7",   "E9", "F9", "G9", "H9", "I9" ]
 
 game_2:
   title: "Game two"
   player_1: player_1
   player_2: player_2
-  whose_move: 0
+  whose_move: Game::PLAYER_2
+  move_counter: 0
   player_1_fleet_status: 0b0111_1111_1111_1111
   player_2_fleet_status: 0b0111_1111_1111_1111
-  player_1_fleet_coords: ["a1",   "b1", "b2",   "c1", "c2", "c3",   "d1", "d2", "d3", "d4",   "e1", "e2", "e3", "e4", "e5" ]
-  player_2_fleet_coords: ["b2",   "b4", "c4",   "d1", "d2", "d3",   "i4", "i5", "i6", "i7",   "e9", "f9", "g9", "h9", "i9" ]
+  player_1_fleet_coords: ["A1",   "B1", "B2",   "C1", "C2", "C3",   "D1", "D2", "D3", "D4",   "E1", "E2", "E3", "E4", "E5" ]
+  player_2_fleet_coords: ["B2",   "B4", "C4",   "D1", "D2", "D3",   "I4", "I5", "I6", "I7",   "E9", "F9", "G9", "H9", "I9" ]
+
+game_waiting_for_p2_join:
+  title: "Game player two can join"
+  player_1: player_1
+  player_2: nil
+  whose_move: Game::PLAYER_1
+  move_counter: 0
+  player_1_fleet_status: 0b0111_1111_1111_1111
+  player_2_fleet_status: 0b0111_1111_1111_1111
+  player_1_fleet_coords: ["A1",   "B1", "B2",   "C1", "C2", "C3",   "D1", "D2", "D3", "D4",   "E1", "E2", "E3", "E4", "E5" ]
+  player_2_fleet_coords: ["B2",   "B4", "C4",   "D1", "D2", "D3",   "I4", "I5", "I6", "I7",   "E9", "F9", "G9", "H9", "I9" ]

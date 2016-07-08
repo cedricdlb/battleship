@@ -1,7 +1,7 @@
 class Game < ApplicationRecord
   has_many :moves, dependent: :destroy
-  belongs_to :player_1, :class_name => "Player"#, :foreign_key => 'player_1_id'
-  belongs_to :player_2, :class_name => "Player"#, :foreign_key => 'player_2_id'
+  belongs_to :player_1, :class_name => "Player", optional: true
+  belongs_to :player_2, :class_name => "Player", optional: true
   serialize :player_1_fleet_coords, Array
   serialize :player_2_fleet_coords, Array
 
@@ -31,10 +31,83 @@ class Game < ApplicationRecord
     AIRCRAFT_CARRIER_MASK => "Aircraft Carrier",
   }
 
+  SHIP_COORDS_INDICES = {
+    SUBMARINE_MASK        => [0],
+    DESTROYER_MASK        => [1..2],
+    CRUISER_MASK          => [3..5],
+    BATTLESHIP_MASK       => [6..9],
+    AIRCRAFT_CARRIER_MASK => [10..14],
+  }
+
+  # By default, Player_1 always moves first
+  PLAYER_1  = 0
+  PLAYER_2  = 1
   NUMBER_OF_PLAYERS = 2
 
+  STATE_WAITING_ALL_PLAYERS_TO_JOIN = 0
+  STATE_WAITING_PLAYER_1_TO_JOIN    = 1
+  STATE_WAITING_PLAYER_2_TO_JOIN    = 2
+  STATE_WAITING_PLAYER_1_TO_MOVE    = 3
+  STATE_WAITING_PLAYER_2_TO_MOVE    = 4
+  STATE_GAME_OVER_PLAYER_1_WON      = 5
+  STATE_GAME_OVER_PLAYER_2_WON      = 6
+  STATE_GAME_OVER_TIED_GAME         = 7
+
+  GAME_STATE_MESSAGES = {
+    STATE_WAITING_ALL_PLAYERS_TO_JOIN => "Waiting for all players to join",
+    STATE_WAITING_PLAYER_1_TO_JOIN    => "Waiting for player 1 to join",
+    STATE_WAITING_PLAYER_2_TO_JOIN    => "Waiting for player 2 to join",
+    STATE_WAITING_PLAYER_1_TO_MOVE    => "Waiting for player 1 to move",
+    STATE_WAITING_PLAYER_2_TO_MOVE    => "Waiting for player 2 to move",
+    STATE_GAME_OVER_PLAYER_1_WON      => "Game Over: player 1 won",
+    STATE_GAME_OVER_PLAYER_2_WON      => "Game Over: player 2 won",
+    STATE_GAME_OVER_TIED_GAME         => "Game Over: tied game",
+  }
+
+  X_BOUND = 10
+  Y_VALS = %w(A B C D E F G H I J)
+ #Y_VALS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J",]
+
+  def game_state
+    if !player_1_id
+      if !player_2_id
+        STATE_WAITING_ALL_PLAYERS_TO_JOIN
+      else
+        STATE_WAITING_PLAYER_1_TO_JOIN
+      end
+    elsif !player_2_id
+      STATE_WAITING_PLAYER_2_TO_JOIN
+    elsif PLAYER_1 == whose_move
+      if is_fleet_sunk?(player_1_fleet_status)
+        if is_fleet_sunk?(player_2_fleet_status)
+          STATE_GAME_OVER_TIED_GAME
+        else
+          STATE_GAME_OVER_PLAYER_2_WON
+        end
+      elsif is_fleet_sunk?(player_2_fleet_status)
+        STATE_GAME_OVER_PLAYER_1_WON
+      else
+        STATE_WAITING_PLAYER_1_TO_MOVE
+      end
+    else # PLAYER_2 == whose_move
+      if is_fleet_sunk?(player_1_fleet_status)
+        STATE_GAME_OVER_PLAYER_2_WON
+      else
+        STATE_WAITING_PLAYER_2_TO_MOVE
+      end
+    end
+  end
+
+  def game_state_message
+    GAME_STATE_MESSAGES[game_state]
+  end
+
+  def self.an_intact_fleet_status
+    SUBMARINE_MASK | DESTROYER_MASK | CRUISER_MASK | BATTLESHIP_MASK | AIRCRAFT_CARRIER_MASK
+  end
+
   def init_fleet_status
-    self.player_1_fleet_status = self.player_2_fleet_status = SUBMARINE_MASK | DESTROYER_MASK | CRUISER_MASK | BATTLESHIP_MASK | AIRCRAFT_CARRIER_MASK
+    self.player_1_fleet_status = self.player_2_fleet_status = Game.an_intact_fleet_status
   end
 
   # Ideally there should be some validation of supplied fleet coordinates:
@@ -42,8 +115,8 @@ class Game < ApplicationRecord
   # parts of the same ship are consecutive,
   # no two ship parts occupy the same square.
   def init_fleet_coords(params = {})
-    self.player_1_fleet_coords = params["player_1_fleet_coords"] || random_fleet_layout
-    self.player_2_fleet_coords = params["player_2_fleet_coords"] || random_fleet_layout
+    self.player_1_fleet_coords = params["player_1_fleet_coords"] || Game.random_fleet_layout
+    self.player_2_fleet_coords = params["player_2_fleet_coords"] || Game.random_fleet_layout
   end
 
  #def initialize(params = {}) # Can't def initialize on ActiveRecord subclasses (http://stackoverflow.com/a/23050424/1399315)
@@ -53,17 +126,15 @@ class Game < ApplicationRecord
     init_fleet_coords(params)
     self.player_1_id = params["player_id"]   || params["player_1_id"]
     self.player_2_id = params["player_2_id"]
-    self.whose_move = 0 # player_1 is 0, player_2 is 1, so starts as player_1's move
+    self.whose_move = PLAYER_1
+    self.move_counter = 0
   end
 
   def record_hit!(attack_coords, defending_player_id)
     move_status = {}
     defender_fleet_coords = defending_player_id == player_1_id ?  player_1_fleet_coords  :  player_2_fleet_coords
-    defender_fleet_status = defending_player_id == player_1_id ? "player_1_fleet_status" : "player_2_fleet_status"
-    defender = Player.find(defending_player_id).name # this doesn't take advantage of any preloading.
-   #defender = player(defending_player_id).name      # TODO: Define and use this method instead.
-    attacker = other_player(defending_player_id).name
-    move_status[:message]  = "#{attacker} targetted: #{attack_coords} and "  # ...
+    move_status[:message]  = "#{attacker.name} targetted: #{attack_coords} and "  # ...
+    move_status[:move_number] = move_counter + 1
 
     # ship_part_index will be nil if there is no ship at the specified coordinate
     ship_part_index = defender_fleet_coords.flatten.index(attack_coords)
@@ -73,20 +144,17 @@ class Game < ApplicationRecord
       ship_mask = get_ship_mask(ship_part_mask)
 
       # clear the bit in fleet_status which represents the ship_part which has been hit.
-     #          defender_fleet_status  &= ~ship_part_mask # This did not alter self, e.g. self.player_1_fleet_status
-      self.send(defender_fleet_status+"=", self.send(defender_fleet_status) & ~ship_part_mask)
+      set_defender_fleet_status(defender_fleet_status & ~ship_part_mask)
       self.save
 
       move_status[:hit]           = true
       move_status[:ship_part_hit] = SHIP_NAMES[ship_mask]
-     #move_status[:ship_sunk]     = SUNK == defender_fleet_status & ship_mask
-     #move_status[:fleet_sunk]    = SUNK == defender_fleet_status
       move_status[:ship_sunk]     = is_ship_sunk?(defender_fleet_status, ship_mask)
       move_status[:fleet_sunk]    = is_fleet_sunk?(defender_fleet_status)
 
       sunk_or_hit = move_status[:ship_sunk] ? "sunk" : "hit"
-      move_status[:message]      += "#{sunk_or_hit} #{defender}'s #{move_status[:ship_part_hit]}!"
-      move_status[:message]      += " And destroyed #{defender}'s fleet!" if move_status[:fleet_sunk]
+      move_status[:message]      += "#{sunk_or_hit} #{defender.name}'s #{move_status[:ship_part_hit]}!"
+      move_status[:message]      += " And destroyed #{defender.name}'s fleet!" if move_status[:fleet_sunk]
     else
       move_status[:hit]           = false
       move_status[:ship_part_hit] = nil
@@ -97,12 +165,19 @@ class Game < ApplicationRecord
     return move_status
   end
 
-  # TODO: Employ and test these methods in record_hit method
-  def defender_fleet_status
-    players_turn?(player_2_id) ? player_1_fleet_status : player_2_fleet_status
+  def attacker
+    [player_1, player_2][whose_move]
   end
 
-  def defender_fleet_status=(fleet_status)
+  def defender
+    [player_2, player_1][whose_move]
+  end
+
+  def defender_fleet_status
+    [player_2_fleet_status, player_1_fleet_status][whose_move]
+  end
+
+  def set_defender_fleet_status(fleet_status)
     if players_turn?(player_2_id)
       self.player_1_fleet_status = fleet_status
     else
@@ -142,6 +217,10 @@ class Game < ApplicationRecord
   def get_ship_mask(ship_part_mask)
     SHIP_MASKS.select {|ship_mask| 0 != (ship_mask & ship_part_mask) }.first
   end
+  
+  def get_ship_coords(fleet_coords, ship_mask)
+    Array(fleet_coords[*SHIP_COORDS_INDICES[ship_mask]])
+  end
 
   def other_player(this_player_id)
     player_1_id == this_player_id ? player_2 : player_1
@@ -151,15 +230,16 @@ class Game < ApplicationRecord
     player_1_id == this_player_id ? player_2_id : player_1_id
   end
 
-  def increment_whose_turn_it_is!
+  def increment_move_counters!
     self.whose_move = (whose_move + 1) % NUMBER_OF_PLAYERS
+    self.move_counter += 1
     self.save
   end
 
   # Could theoretically be adapted to multiple players, using
   # an array of player_ids, where the index is the player_number
   def player_number(player_id)
-    player_id == player_1_id ? 0 : player_id == player_2_id ? 1 : nil
+    player_id == player_1_id ? PLAYER_1 : player_id == player_2_id ? PLAYER_2 : nil
   end
 
   def player_id_whose_move_it_is
@@ -168,36 +248,71 @@ class Game < ApplicationRecord
   end
 
   def players_turn?(player_id)
-    whose_move == player_number(player_id)
+    whose_move == player_number(player_id) && [STATE_WAITING_PLAYER_1_TO_MOVE, STATE_WAITING_PLAYER_2_TO_MOVE].include?(game_state)
+  end
+
+  # The board is a 10x10 coordinate grid (where x = 1..10, y = A..J).
+  # Ships are placed according to the coordinate of their bow, and
+  # their stern points either towards the right (horizontal) or down (vertical).
+  # First the bow's x coordinate is found as a random number between 0 and 9.
+  # If the random x_coord is less than a ship length away from the right edge,
+  # then there isn't enough room for the ship to be placed horizontally so close
+  # to the edge. In that case, the ship will have to be placed vertically thus
+  # the y_coord's maximum bound will need to be 10-ship_length to have room to
+  # place it vertically.  Else if the ship is not too close to the right, it may
+  # be horizontal, and the y_bound can be 10.  If the random y_coord is less than
+  # a ships length away from the bottom, then it will have to be horizontal.
+  # If there is no required orientation, it will be randomly vert or horizontal.
+  #
+  # Ships are placed from largest to smallest, choosing a location & orientation
+  # according to the above, and then if any of their coordinates overlap with a
+  # previously placed ship, then the ship will get a new random position until a
+  # clear location is found.
+  def self.random_fleet_layout
+    fleet_coords = []
+    5.downto(1) do |ship_length|
+      #puts "Game.random_fleet_layout ship_length: #{ship_length}"
+      begin
+        #puts "Game.random_fleet_layout looping to find non conflicting ship position"
+        x_coord, y_coord, orientation = Game.random_bow_coords_and_orientation(ship_length)
+        ship_coords = Game.ship_vector(x_coord, y_coord, orientation, ship_length)
+      end until Game.ship_does_not_intersect_another(ship_coords, fleet_coords)
+      #puts "Game.random_fleet_layout set fleet_coords = #{ship_coords + fleet_coords}"
+      fleet_coords = ship_coords + fleet_coords
+    end
+    #puts "Game.random_fleet_layout returning #{fleet_coords}"
+    return fleet_coords
   end
 
   private
 
-  SAMPLE_LAYOUTS = [
-    ["a1",   "b1", "b2",   "c1", "c2", "c3",   "d1", "d2", "d3", "d4",   "e1", "e2", "e3", "e4", "e5" ],
-    ["b2",   "b4", "c4",   "d1", "d2", "d3",   "i4", "i5", "i6", "i7",   "e9", "f9", "g9", "h9", "i9" ]
- #  [["a1"],   ["b1", "b2"],   ["c1", "c2", "c3"],   ["d1", "d2", "d3", "d4"],   ["e1", "e2", "e3", "e4", "e5"] ],
- #  [["b2"],   ["b4", "c4"],   ["d1", "d2", "d3"],   ["i4", "i5", "i6", "i7"],   ["e9", "f9", "g9", "h9", "i9"] ]
-  ]
-    
-  SAMPLE_LAYOUTS_2 = [
-    [[:submarine,         ["a1"]],
-     [:destroyer,         ["b1", "b2"]],
-     [:cruiser,           ["c1", "c2", "c3"]],
-     [:battleship,        ["d1", "d2", "d3", "d4"]],
-     [:air_craft_carrier, ["e1", "e2", "e3", "e4", "e5"]]
-    ],
-    [[:submarine,         ["b2"]],
-     [:destroyer,         ["b4", "c4"]],
-     [:cruiser,           ["d1", "d2", "d3"]],
-     [:battleship,        ["i4", "i5", "i6", "i7"]],
-     [:air_craft_carrier, ["e9", "f9", "g9", "h9", "i9"]]
-    ]
-  ]
-  # Stub, not very random yet
-  def random_fleet_layout
-    SAMPLE_LAYOUTS[rand(SAMPLE_LAYOUTS.size)]
+  def self.random_bow_coords_and_orientation(ship_length)
+    orientation = nil
+    edge_zone = X_BOUND - ship_length
+    x_coord = rand(X_BOUND) # will be between 0 and 9
+    orientation = :vertical if x_coord >= edge_zone
+    y_bound = orientation.present? ? edge_zone : X_BOUND
+    y_coord = rand(y_bound) # will be between 0 and (y_bound - 1)
+    orientation = :horizontal if y_coord >= edge_zone # can't happen if :vertical
+    orientation = [:vertical, :horizontal][rand(2)] unless orientation
+   #puts "Game.random_bow_coords_and_orientation returning [#{x_coord}, #{y_coord}, #{orientation}]\n"
+    return [x_coord, y_coord, orientation]
   end
 
+  def self.ship_vector(x_coord, y_coord, orientation, ship_length)
+    vector = []
+    (0...ship_length).each do |length_offset|
+      # TODO
+      x = :vertical   == orientation ? x_coord + 1 : x_coord + 1 + length_offset
+      y = :horizontal == orientation ? y_coord : y_coord + length_offset
+      vector << Y_VALS[y] + x.to_s
+    end
+    #puts "Game.ship_vector (#{x_coord}, #{y_coord}, #{orientation}, #{ship_length}) returning #{vector}"
+    return vector
+  end
+
+  def self.ship_does_not_intersect_another(ship_coords, fleet_coords)
+    (ship_coords - fleet_coords).length == ship_coords.length
+  end
 
 end

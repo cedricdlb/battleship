@@ -1,5 +1,6 @@
 class GamesController < ApplicationController
   before_action :set_game, only: [:show, :edit, :update, :join, :destroy]
+  before_action :trim_blanks_from_fleet_coords, only: [:update]
 
   # GET /games
   # GET /games.json
@@ -33,7 +34,7 @@ class GamesController < ApplicationController
 
     respond_to do |format|
       if @game.save
-        format.html { redirect_to @game, notice: 'Game was successfully created, waiting for player 2.' }
+        format.html { redirect_to @game, notice: @game.game_state_message }
         format.json { render :show, status: :created, location: @game }
       else
         format.html { render :new }
@@ -42,17 +43,15 @@ class GamesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /games/1/join
-  # PATCH/PUT /games/1/join.json
+  # PATCH /games/1/join
+  # PATCH /games/1/join.json
   def join
-    @game.player_2 = game_params["player_id"] if game_params["player_id"] && !@game.player_2
-
-    # TODO: Use Action Cable to Keep channel open to player_2
+    # TODO: Use Action Cable to Keep channel open to player
     # TODO: Use Action Cable to Message player_1 that it's their turn to start
 
     respond_to do |format|
       if @game.update(game_params)
-        format.html { redirect_to @game, notice: "You have successfully joined the game #{game.title}." }
+        format.html { redirect_to @game, notice: @game.game_state_message }
         format.json { render :show, status: :ok, location: @game }
       else
         format.html { render :edit }
@@ -93,7 +92,12 @@ class GamesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def game_params
-      params.require(:game).permit(:title, :player_1_id, :player_2_id, :whose_move, :player_1_fleet_status, :player_2_fleet_status, :player_1_fleet_coords => [], :player_2_fleet_coords => [])
+      params.require(:game).permit(:title, :player_1_id, :player_2_id, :whose_move, :move_counter, :player_1_fleet_status, :player_2_fleet_status, :player_1_fleet_coords => [], :player_2_fleet_coords => [])
+    end
+  
+    def trim_blanks_from_fleet_coords
+      params[:game][:player_1_fleet_coords] -= [""] if params[:game][:player_1_fleet_coords]
+      params[:game][:player_2_fleet_coords] -= [""] if params[:game][:player_2_fleet_coords]
     end
 
 end

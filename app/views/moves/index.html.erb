@@ -13,6 +13,7 @@
       <th>Ship part hit</th>
       <th>Ship sunk</th>
       <th>Fleet sunk</th>
+      <th>Message</th>
       <th colspan="3"></th>
     </tr>
   </thead>
@@ -22,12 +23,13 @@
       <tr>
         <td><%= move.game_id %></td>
         <td><%= move.player_id %></td>
-        <td><%= move.turn_number %></td>
+        <td><%= move.move_number %></td>
         <td><%= move.attack_coords %></td>
         <td><%= move.hit %></td>
         <td><%= move.ship_part_hit %></td>
         <td><%= move.ship_sunk %></td>
         <td><%= move.fleet_sunk %></td>
+        <td><%= move.message %></td>
         <td><%= link_to 'Show', game_move_path(@game, move) %></td>
         <td><%= link_to 'Edit', edit_game_move_path(@game, move) %></td>
         <td><%= link_to 'Destroy', [@game, move], method: :delete, data: { confirm: 'Are you sure?' } %></td>

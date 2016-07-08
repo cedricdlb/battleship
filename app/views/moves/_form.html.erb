@@ -22,8 +22,8 @@
   </div>
 
   <div class="field">
-    <%= f.label :turn_number %>
-    <%= f.number_field :turn_number %>
+    <%= f.label :move_number %>
+    <%= f.number_field :move_number %>
   </div>
 
   <div class="field">
@@ -49,6 +49,11 @@
   <div class="field">
     <%= f.label :fleet_sunk %>
     <%= f.check_box :fleet_sunk %>
+  </div>
+
+  <div class="field">
+    <%= f.label :message %>
+    <%= f.text_field :message %>
   </div>
 
   <div class="actions">
