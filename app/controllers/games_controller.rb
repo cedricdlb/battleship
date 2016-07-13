@@ -1,5 +1,5 @@
 class GamesController < ApplicationController
-  before_action :set_game, only: [:show, :edit, :update, :join, :destroy]
+  before_action :set_game, only: [:show, :edit, :status, :update, :join, :destroy]
   before_action :trim_blanks_from_fleet_coords, only: [:update]
 
   # GET /games
@@ -20,6 +20,15 @@ class GamesController < ApplicationController
 
   # GET /games/1/edit
   def edit
+  end
+
+  # GET /games/1/status
+  def status
+    @last_move = @game.moves.where(move_number: @game.move_counter).first
+    respond_to do |format|
+      format.html { render :status, notice: @game.game_state_message }
+      format.json { render :status } #, status: :created, location: @game }
+    end
   end
 
   # POST /games

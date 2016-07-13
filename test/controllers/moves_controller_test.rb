@@ -1,18 +1,5 @@
 require 'test_helper'
 
-#  Tests to write:
-#  √ move player 1
-#  √ move player 2
-#  √ player 1 can't play if it's player 2's turn
-#  √ player 2 can't play if it's player 1's turn
-#  √ move counter increments after each turn
-#  √ hits are recorded to damage the fleet
-#  √ misses do not damage the fleet
-#  √ if player 1 destroys player 2's fleet, player 2 has one last shot from her remaining fleet (as if players fired simultaneously)
-#  √ if player 2 destroys player 1's fleet, player 1 does not have another go because he already went that round.
-#  √ once all players have shot that winning round, game terminates and no more shots are accepted.
-#  √ if both players sink each others' fleets in the same round, game status is a tie
-
 class MovesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @game = games(:game_1)
@@ -192,7 +179,7 @@ class MovesControllerTest < ActionDispatch::IntegrationTest
     @game.whose_move = Game::PLAYER_2
     @game.move_counter = 29
     @game.save
-    @move = moves(:move_2_p_2)
+    @move = moves(:move_1_p_2)
     assert_difference('Move.count') do
       post game_moves_url(@game), params: { move: { attack_coords: @move.attack_coords,
                                                     game_id:       @move.game_id,

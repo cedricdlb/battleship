@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   resources :games do
-    patch 'join', on: :member
+    patch 'join',   on: :member
+    get   'status', on: :member
     resources :moves
   end
   resources :players

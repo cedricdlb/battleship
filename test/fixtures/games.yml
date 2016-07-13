@@ -25,7 +25,6 @@ game_2:
 game_waiting_for_p2_join:
   title: "Game player two can join"
   player_1: player_1
-  player_2: nil
   whose_move: Game::PLAYER_1
   move_counter: 0
   player_1_fleet_status: 0b0111_1111_1111_1111
