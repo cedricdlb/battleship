@@ -20,6 +20,8 @@
 *~
 *.sw[a-z]
 
-# # Mac-specific
+# Mac-specific
 .DS_Store
 
+# Ignore environment file with secret values
+/.env

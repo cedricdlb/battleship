@@ -1,7 +1,20 @@
 Rails.application.routes.draw do
+  # api
+  namespace :api do
+    namespace :v1 do
+      resources :games do
+        get   'status', on: :member
+        patch 'join',   on: :member
+        resources :moves
+      end
+      resources :players
+    end
+  end
+
+  # html/JS
   resources :games do
-    patch 'join',   on: :member
     get   'status', on: :member
+    patch 'join',   on: :member
     resources :moves
   end
   resources :players

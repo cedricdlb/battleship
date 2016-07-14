@@ -11,6 +11,11 @@ Rails.application.configure do
 
   # Show full error reports.
   config.consider_all_requests_local = true
+ #config.consider_all_requests_local = false # changed by CdLB
+  # See: https://wyeworks.com/blog/2016/1/12/improvements-to-error-responses-in-rails-5-api-mode
+  # Changing consider_all_requests_local to false was required in order to get json error
+  # messages instead of html error page in development mode.
+  debug_exception_response_format = :api     # added by CdLB for API mode.
 
   # Enable/disable caching. By default caching is disabled.
   if Rails.root.join('tmp/caching-dev.txt').exist?
