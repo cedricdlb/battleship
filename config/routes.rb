@@ -7,7 +7,7 @@ Rails.application.routes.draw do
         patch 'join',   on: :member
         resources :moves
       end
-      resources :players
+      resources :players, only: [:index, :show, :create, :update, :destroy]
     end
   end
 
