@@ -6,6 +6,7 @@ class CreateGames < ActiveRecord::Migration[5.0]
       t.integer :player_2_id
       t.integer :whose_move
       t.integer :move_counter
+      t.integer :game_state
       t.integer :player_1_fleet_status
       t.integer :player_2_fleet_status
       t.text    :player_1_fleet_coords

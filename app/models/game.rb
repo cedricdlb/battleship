@@ -5,6 +5,12 @@ class Game < ApplicationRecord
   serialize :player_1_fleet_coords, Array
   serialize :player_2_fleet_coords, Array
 
+  before_save :update_game_state
+# before_create :update_game_state
+# before_save :update_game_state, if: ["game_state.nil?", :whose_move_changed?,
+#                                      :player_1_id_changed?, :player_2_id_changed?,
+#                                      :player_1_fleet_status_changed?, :player_2_fleet_status_changed?]
+
   validates :title, presence: true, uniqueness: true, case_sensitive: false
   validate  :validate_player_1_fleet_coords, if: :player_1_id?
   validate  :validate_player_2_fleet_coords, if: :player_2_id?
@@ -106,7 +112,7 @@ class Game < ApplicationRecord
     messages
   end
 
-  def game_state
+  def determine_game_state
     if !player_1_id
       if !player_2_id
         STATE_WAITING_ALL_PLAYERS_TO_JOIN
@@ -134,6 +140,14 @@ class Game < ApplicationRecord
         STATE_WAITING_PLAYER_2_TO_MOVE
       end
     end
+  end
+
+  def game_state
+    read_attribute(:game_state) || determine_game_state
+  end
+
+  def update_game_state
+    self.game_state = determine_game_state
   end
 
   def game_state_message
@@ -170,12 +184,11 @@ class Game < ApplicationRecord
 
   def record_hit!(attack_coords, defending_player_id)
     move_status = {}
-    defender_fleet_coords = defending_player_id == player_1_id ?  player_1_fleet_coords  :  player_2_fleet_coords
     move_status[:message]  = "#{attacker.name} targeted: #{attack_coords} and "  # ...
     move_status[:move_number] = move_counter + 1
 
     # ship_part_index will be nil if there is no ship at the specified coordinate
-    ship_part_index = defender_fleet_coords.flatten.index(attack_coords)
+    ship_part_index = defender_fleet_coords.index(attack_coords)
 
     if ship_part_index
       ship_part_mask = 1 << ship_part_index
@@ -183,6 +196,7 @@ class Game < ApplicationRecord
 
       # clear the bit in fleet_status which represents the ship_part which has been hit.
       set_defender_fleet_status(defender_fleet_status & ~ship_part_mask)
+      update_game_state
       self.save
 
       move_status[:hit]           = true
@@ -209,6 +223,10 @@ class Game < ApplicationRecord
 
   def defender
     [player_2, player_1][whose_move]
+  end
+
+  def defender_fleet_coords
+    [player_2_fleet_coords, player_1_fleet_coords][whose_move]
   end
 
   def defender_fleet_status
@@ -340,7 +358,6 @@ class Game < ApplicationRecord
   def self.ship_vector(x_coord, y_coord, orientation, ship_length)
     vector = []
     (0...ship_length).each do |length_offset|
-      # TODO
       x = :vertical   == orientation ? x_coord + 1 : x_coord + 1 + length_offset
       y = :horizontal == orientation ? y_coord : y_coord + length_offset
       vector << Y_VALS[y] + x.to_s

@@ -23,8 +23,8 @@ class Api::V1::GamesController < Api::V1::BaseController
   # GET api/v1/games/1/status
   def status
     @last_move = @game.moves.where(move_number: @game.move_counter).first
-    render json: @game.as_json(only: [:id, :title, :player_1_id, :player_2_id, :whose_move, :move_counter, :created_at, :updated_at]).
-                       merge(game_state: @game.game_state, game_state_message: @game.game_state_message).
+    render json: @game.as_json(only: [:id, :title, :player_1_id, :player_2_id, :whose_move, :move_counter, :game_state, :created_at, :updated_at]).
+                       merge(game_state_message: @game.game_state_message).
                        merge(last_move: @last_move.try(:as_json) || {}), status: 200
   end
 

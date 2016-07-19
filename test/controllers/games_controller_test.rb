@@ -78,7 +78,7 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
                                       whose_move: Game::PLAYER_1,
                                       move_counter: 0,
                                       title: "waiting_for_p_2"} }
-    assert_equal("Waiting for all players to join", flash[:notice])
+    assert_equal("Waiting for all players to join", flash[:notice], "Unexpected value for flash[:notice]")
   end
 
   # API request (JSON)
