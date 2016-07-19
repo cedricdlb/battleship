@@ -2,10 +2,9 @@ Rails.application.routes.draw do
   # api
   namespace :api do
     namespace :v1 do
-      resources :games do
+      resources :games, only: [:index, :show, :new, :create, :update, :destroy] do
         get   'status', on: :member
-        patch 'join',   on: :member
-        resources :moves
+        resources :moves, only: [:index, :show, :new, :create]
       end
       resources :players, only: [:index, :show, :create, :update, :destroy]
     end

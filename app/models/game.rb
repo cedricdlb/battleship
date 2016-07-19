@@ -6,7 +6,19 @@ class Game < ApplicationRecord
   serialize :player_2_fleet_coords, Array
 
   validates :title, presence: true, uniqueness: true, case_sensitive: false
-  # TODO: validation method for player_1_fleet_coords & player_2_fleet_coords
+  validate  :validate_player_1_fleet_coords, if: :player_1_id?
+  validate  :validate_player_2_fleet_coords, if: :player_2_id?
+  validates :player_1_fleet_status, if: :player_1_id?, numericality: { only_integer: true,
+                                                                       greater_than_or_equal_to: 0,
+                                                                       less_than_or_equal_to: 0b0111_1111_1111_1111 }
+  validates :player_2_fleet_status, if: :player_2_id?, numericality: { only_integer: true,
+                                                                       greater_than_or_equal_to: 0,
+                                                                       less_than_or_equal_to: 0b0111_1111_1111_1111 }
+  validates :whose_move,   if: "player_1_id? && player_2_id?", numericality: { only_integer: true,
+                                                                       greater_than_or_equal_to: 0,
+                                                                       less_than_or_equal_to:    1,
+                                                                       message: "must be 0 or 1" }
+  validates :move_counter, if: "player_1_id? && player_2_id?", numericality: { only_integer: true, greater_than_or_equal_to: 0}
   
   SUNK                    = 0b0000_0000_0000_0000
   SUBMARINE_MASK          = 0b0000_0000_0000_0001
@@ -14,6 +26,8 @@ class Game < ApplicationRecord
   CRUISER_MASK            = 0b0000_0000_0011_1000
   BATTLESHIP_MASK         = 0b0000_0011_1100_0000
   AIRCRAFT_CARRIER_MASK   = 0b0111_1100_0000_0000
+
+  NUMBER_OF_SHIP_PARTS    = 15
 
   SHIP_MASKS = [
     SUBMARINE_MASK,
@@ -67,6 +81,30 @@ class Game < ApplicationRecord
   X_BOUND = 10
   Y_VALS = %w(A B C D E F G H I J)
  #Y_VALS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J",]
+  COORDINATE_MATCHER = /^[A-J]([1-9]|10)$/
+
+  def validate_player_1_fleet_coords
+    messages = validate_fleet_coords(player_1_fleet_coords)
+   #errors.add(:player_1_fleet_coords, messages) if messages.present?
+    messages.each {|message| errors.add(:player_1_fleet_coords, message) }
+  end
+
+  def validate_player_2_fleet_coords
+    messages = validate_fleet_coords(player_2_fleet_coords)
+   #errors.add(:player_2_fleet_coords, messages) if messages.present?
+    messages.each {|message| errors.add(:player_2_fleet_coords, message) }
+  end
+
+  def validate_fleet_coords(fleet_coords)
+    messages = []
+    # first check appears to be redundant given its nature as a serialized array: so even when set to nil it seems to be set as an empty array.
+    messages << "must be an array of coordinate strings like ['A1', 'B3', 'B4', ...]" unless fleet_coords.is_a?(Array)
+    messages << "must have #{NUMBER_OF_SHIP_PARTS} unique coordinate values" unless NUMBER_OF_SHIP_PARTS == fleet_coords.uniq.length
+    bc = fleet_coords.select {|e| e !~ COORDINATE_MATCHER} # find bad_coordinates (bc)
+    messages << "has these #{bc.length} elements in the wrong format: #{bc} (values should range from A1 to J10)" if bc.present?
+    # TODO: more thorough validation of the values within fleet_coords, i.e. that ship parts are contiguous
+    messages
+  end
 
   def game_state
     if !player_1_id
@@ -133,7 +171,7 @@ class Game < ApplicationRecord
   def record_hit!(attack_coords, defending_player_id)
     move_status = {}
     defender_fleet_coords = defending_player_id == player_1_id ?  player_1_fleet_coords  :  player_2_fleet_coords
-    move_status[:message]  = "#{attacker.name} targetted: #{attack_coords} and "  # ...
+    move_status[:message]  = "#{attacker.name} targeted: #{attack_coords} and "  # ...
     move_status[:move_number] = move_counter + 1
 
     # ship_part_index will be nil if there is no ship at the specified coordinate
@@ -186,7 +224,7 @@ class Game < ApplicationRecord
   end
 
   def is_fleet_sunk?(fleet_status)
-    SUNK == fleet_status
+    SUNK == fleet_status & Game.an_intact_fleet_status
   end
 
   def is_ship_sunk?(fleet_status, ship_mask)
@@ -213,7 +251,7 @@ class Game < ApplicationRecord
   end
 
   # Get the full ship mask from the partial ship mask
-  # If any ON bits in ship_mask overlap with ship_part_mask, then its part of the ship
+  # If any ON bits in ship_mask overlap with ship_part_mask, then it is part of the ship
   def get_ship_mask(ship_part_mask)
     SHIP_MASKS.select {|ship_mask| 0 != (ship_mask & ship_part_mask) }.first
   end
