@@ -1,5 +1,89 @@
+<head>
+  <STYLE type="text/css">
+   H1 {border-width: 1; border: solid; text-align: center}
+   .board-main-div {
+     position: relative;
+   }
+   .board-main {
+     position: absolute;
+     left:     0px;
+     top:      0px;
+     z-index:  -4;
+   }
+   .ship {
+     position: absolute;
+     z-index:  -3;
+   }
+   .red-peg {
+     width:  20px;
+     height: 20px;
+     -webkit-border-radius: 10px;
+     -moz-border-radius: 10px;
+     border-radius: 10px;
+     background: red;
+     position: absolute;
+     z-index: -1;
+   }
+   .white-peg {
+     width:  20px;
+     height: 20px;
+     -webkit-border-radius: 10px;
+     -moz-border-radius: 10px;
+     border-radius: 10px;
+     background: white;
+     position: absolute;
+     z-index: -1;
+   }
+   .status {
+     position: absolute;
+     left:       0px;
+     top:      600px;
+     z-index:    0;
+   }
+ </STYLE>
+</head>
+
 <p id="notice"><%= notice %></p>
 
+<div class="board-main-div" >
+  <%= image_tag("battleship.board.png",
+                :size => "550x550",
+                :alt => "image_of_board",
+                :class => "board-main",
+               ) %>
+  <%= image_tag("ship.AirCraftCarrier.vertical.jpg",
+                  :class => "ship aircarrier",
+                  :size => "50x250",
+                  :style => "left:244px; top:244px;",
+                  :alt => "image_of_AirCraftCarrier.vertical",
+                 ) %>
+  <% for l in %w(a b c d e f g h i j) %>
+    <% for t in 1..10 %>
+      <% coordinate = l + t.to_s %>
+      <% left, top = peg_position(coordinate, 550) %>
+      <div class="white-peg" style="left: <%=left%>px; top: <%=top%>px;" >
+        <!--
+        <span style="color:blue;">
+          <%= left.round %><br><%= top.round %>
+        </span>
+        -->
+      </div>
+    <% end %>
+  <% end %>
+  <div class="red-peg top-left"     style="left:  68px; top:  59px;" ></div>
+  <div class="red-peg top-right"    style="left: 497px; top:  59px;" ></div>
+  <div class="red-peg bottom-left"  style="left:  54px; top: 514px;" ></div>
+  <div class="red-peg bottom-right" style="left: 510px; top: 514px;" ></div>
+  <div class="red-peg acc-1" style="left: 258px; top: 253px;" ></div>
+  <div class="red-peg acc-2" style="left: 258px; top: 304px;" ></div>
+  <div class="red-peg acc-3" style="left: 257px; top: 356px;" ></div>
+  <div class="red-peg acc-4" style="left: 257px; top: 409px;" ></div>
+  <div class="red-peg acc-5" style="left: 257px; top: 461px;" ></div>
+  <!--
+  -->
+</div>
+
+<div class="status" >
 <p>
   <strong>Title:</strong>
   <%= @game.title %>
@@ -92,3 +176,4 @@
     </div>
   <% end %>
 <% end %>
+</div>
