@@ -1,4 +1,7 @@
 <head>
+  <% peg_size = 20 %>
+  <% board_size = 550 %>
+  
   <STYLE type="text/css">
    H1 {border-width: 1; border: solid; text-align: center}
    .board-main-div {
@@ -14,22 +17,44 @@
      position: absolute;
      z-index:  -3;
    }
+   .peg-shadow-1 {
+     width:  <%=peg_size%>px;
+     height: <%=peg_size%>px;
+     -webkit-border-radius: 50%;
+     -moz-border-radius: 50%;
+     border-radius: 50%;
+     background: black;
+     position: absolute;
+     opacity: 0.35;
+     z-index: -2;
+   }
+   .peg-shadow-2 {
+     width:  <%=peg_size%>px;
+     height: <%=peg_size%>px;
+     -webkit-border-radius: 50%;
+     -moz-border-radius: 50%;
+     border-radius: 50%;
+     background: black;
+     position: absolute;
+     opacity: 0.35;
+     z-index: -2;
+   }
    .red-peg {
-     width:  20px;
-     height: 20px;
-     -webkit-border-radius: 10px;
-     -moz-border-radius: 10px;
-     border-radius: 10px;
+     width:  <%=peg_size%>px;
+     height: <%=peg_size%>px;
+     -webkit-border-radius: 50%;
+     -moz-border-radius: 50%;
+     border-radius: 50%;
      background: red;
      position: absolute;
      z-index: -1;
    }
    .white-peg {
-     width:  20px;
-     height: 20px;
-     -webkit-border-radius: 10px;
-     -moz-border-radius: 10px;
-     border-radius: 10px;
+     width:  <%=peg_size%>px;
+     height: <%=peg_size%>px;
+     -webkit-border-radius: 50%;
+     -moz-border-radius: 50%;
+     border-radius: 50%;
      background: white;
      position: absolute;
      z-index: -1;
@@ -47,40 +72,100 @@
 
 <div class="board-main-div" >
   <%= image_tag("battleship.board.png",
-                :size => "550x550",
+                :size => "#{board_size}x#{board_size}",
                 :alt => "image_of_board",
                 :class => "board-main",
                ) %>
-  <%= image_tag("ship.AirCraftCarrier.vertical.jpg",
-                  :class => "ship aircarrier",
+  <% left, top = ship_position("j2", 550, Game::AIRCRAFT_CARRIER_MASK, :horizontal) %>
+  <%= image_tag("ship.AirCraftCarrier.horizontal.png",
+                  :class => "ship",
+                  :size => "250x50",
+                  :style => "left:#{left}px; top: #{top}px;",
+                  :alt => "image_of_AirCraftCarrier.horizontal",
+                 ) %>
+
+  <% left, top = ship_position("f1", 550, Game::AIRCRAFT_CARRIER_MASK, :vertical) %>
+  <%= image_tag("ship.AirCraftCarrier.vertical.png",
+                  :class => "ship",
                   :size => "50x250",
-                  :style => "left:244px; top:244px;",
+                  :style => "left:#{left}px; top: #{top}px;",
                   :alt => "image_of_AirCraftCarrier.vertical",
+                 ) %>
+
+  <% left, top = ship_position("i3", 550, Game::BATTLESHIP_MASK, :horizontal) %>
+  <%= image_tag("ship.Battleship.horizontal.png",
+                  :class => "ship",
+                  :size => "200x50",
+                  :style => "left:#{left}px; top: #{top}px;",
+                  :alt => "image_of_Battleship.horizontal",
+                 ) %>
+
+  <% left, top = ship_position("f2", 550, Game::BATTLESHIP_MASK, :vertical) %>
+  <%= image_tag("ship.Battleship.vertical.png",
+                  :class => "ship",
+                  :size => "50x200",
+                  :style => "left:#{left}px; top: #{top}px;",
+                  :alt => "image_of_Battleship.vertical",
+                 ) %>
+
+  <% left, top = ship_position("h4", 550, Game::CRUISER_MASK, :horizontal) %>
+  <%= image_tag("ship.Cruiser.horizontal.png",
+                  :class => "ship",
+                  :size => "150x50",
+                  :style => "left:#{left}px; top: #{top}px;",
+                  :alt => "image_of_Cruiser.horizontal",
+                 ) %>
+
+  <% left, top = ship_position("f3", 550, Game::CRUISER_MASK, :vertical) %>
+  <%= image_tag("ship.Cruiser.vertical.png",
+                  :class => "ship",
+                  :size => "50x150",
+                  :style => "left:#{left}px; top: #{top}px;",
+                  :alt => "image_of_Cruiser.vertical",
+                 ) %>
+
+  <% left, top = ship_position("g5", 550, Game::SUBMARINE_MASK, :horizontal) %>
+  <%= image_tag("ship.Submarine.horizontal.png",
+                  :class => "ship",
+                  :size => "150x50",
+                  :style => "left:#{left}px; top: #{top}px;",
+                  :alt => "image_of_Submarine.horizontal",
+                 ) %>
+
+  <% left, top = ship_position("e4", 550, Game::SUBMARINE_MASK, :vertical) %>
+  <%= image_tag("ship.Submarine.vertical.png",
+                  :class => "ship",
+                  :size => "50x150",
+                  :style => "left:#{left}px; top: #{top}px;",
+                  :alt => "image_of_Submarine.vertical",
+                 ) %>
+
+  <% left, top = ship_position("e5", 550, Game::DESTROYER_MASK, :vertical) %>
+  <%= image_tag("ship.Destroyer.vertical.png",
+                  :class => "ship",
+                  :size => "50x100",
+                  :style => "left:#{left}px; top: #{top}px;",
+                  :alt => "image_of_Destroyer.vertical",
+                 ) %>
+
+  <% left, top = ship_position("f6", 550, Game::DESTROYER_MASK, :horizontal) %>
+  <%= image_tag("ship.Destroyer.horizontal.png",
+                  :class => "ship",
+                  :size => "100x50",
+                  :style => "left:#{left}px; top: #{top}px;",
+                  :alt => "image_of_Destroyer.horizontal",
                  ) %>
   <% for l in %w(a b c d e f g h i j) %>
     <% for t in 1..10 %>
       <% coordinate = l + t.to_s %>
-      <% left, top = peg_position(coordinate, 550) %>
-      <div class="white-peg" style="left: <%=left%>px; top: <%=top%>px;" >
-        <!--
-        <span style="color:blue;">
-          <%= left.round %><br><%= top.round %>
-        </span>
-        -->
-      </div>
+      <%= peg_tag(coordinate, "white", board_size, peg_size) %>
     <% end %>
   <% end %>
-  <div class="red-peg top-left"     style="left:  68px; top:  59px;" ></div>
-  <div class="red-peg top-right"    style="left: 497px; top:  59px;" ></div>
-  <div class="red-peg bottom-left"  style="left:  54px; top: 514px;" ></div>
-  <div class="red-peg bottom-right" style="left: 510px; top: 514px;" ></div>
-  <div class="red-peg acc-1" style="left: 258px; top: 253px;" ></div>
-  <div class="red-peg acc-2" style="left: 258px; top: 304px;" ></div>
-  <div class="red-peg acc-3" style="left: 257px; top: 356px;" ></div>
-  <div class="red-peg acc-4" style="left: 257px; top: 409px;" ></div>
-  <div class="red-peg acc-5" style="left: 257px; top: 461px;" ></div>
-  <!--
-  -->
+  <% red_peg_coords = %w(a1 a10 j1 j10 e5 f5 g5 h5 i5) %>
+  <% red_peg_coords.each do |coordinate| %>
+    <%= peg_tag(coordinate, "red", board_size, peg_size) %>
+  <% end%>
+
 </div>
 
 <div class="status" >
