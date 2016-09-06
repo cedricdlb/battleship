@@ -11,6 +11,7 @@ class GamesController < ApplicationController
   # GET /games/1
   # GET /games/1.json
   def show
+    @player_id = params[:player_id].to_i # TODO: With Devise, this would be @current_user.id
   end
 
   # GET /games/new
@@ -101,7 +102,7 @@ class GamesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def game_params
-      params.require(:game).permit(:title, :player_1_id, :player_2_id, :whose_move, :move_counter, :player_1_fleet_status, :player_2_fleet_status, :player_1_fleet_coords => [], :player_2_fleet_coords => [])
+      params.require(:game).permit(:title, :player_id, :player_1_id, :player_2_id, :whose_move, :move_counter, :player_1_fleet_status, :player_2_fleet_status, :player_1_fleet_coords => [], :player_2_fleet_coords => [])
     end
   
     def trim_blanks_from_fleet_coords

@@ -85,8 +85,6 @@ class Game < ApplicationRecord
   }
 
   X_BOUND = 10
-  Y_VALS = %w(A B C D E F G H I J)
- #Y_VALS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J",]
   COORDINATE_MATCHER = /^[A-J]([1-9]|10)$/
 
   def validate_player_1_fleet_coords
@@ -250,6 +248,10 @@ class Game < ApplicationRecord
   end
 
 
+  def fleet_coords_of_player(player_id)
+    player_id == player_1_id ? player_1_fleet_coords : player_2_fleet_coords
+  end
+ 
 # def fleet_status_of_player(player_id)
 #   player_id == player_1_id ? player_1_fleet_status : player_2_fleet_status
 # end
@@ -274,7 +276,7 @@ class Game < ApplicationRecord
     SHIP_MASKS.select {|ship_mask| 0 != (ship_mask & ship_part_mask) }.first
   end
   
-  def get_ship_coords(fleet_coords, ship_mask)
+  def self.get_ship_coords(fleet_coords, ship_mask)
     Array(fleet_coords[*SHIP_COORDS_INDICES[ship_mask]])
   end
 
@@ -360,7 +362,7 @@ class Game < ApplicationRecord
     (0...ship_length).each do |length_offset|
       x = :vertical   == orientation ? x_coord + 1 : x_coord + 1 + length_offset
       y = :horizontal == orientation ? y_coord : y_coord + length_offset
-      vector << Y_VALS[y] + x.to_s
+      vector << "ABCDEFGHIJ"[y] + x.to_s
     end
     #puts "Game.ship_vector (#{x_coord}, #{y_coord}, #{orientation}, #{ship_length}) returning #{vector}"
     return vector
